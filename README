@@ -1,0 +1,40 @@
+Description
+This program lists all the folders and sub folders in a directory in depth-first search order, using recursion. The program can be used to print out information like User ID, Group ID, Size, Permissions etc for each entity. It uses getopt() to parse command line options and perror to catch any errors that occur. 
+
+Basic flow of the program:	
+The program has these functions
+1.	int main(int argc, char **argv)int isdirectory(char *path)
+The main function takes in the command line values and parses the options using getopt(), setting their respective flags. By the end of the switch statement an if statement checks for the flags that were set and calls printingname(),printing() and dfs().  
+2.	int isfile(char *path)
+This function mainly checks if the path sent to it is a file or a directory and sends 1 is it is a file.
+3.	void printing(char *path,bool t, bool p, bool i, bool u, bool g, bool s, bool d, bool l, bool L)
+This function is called from dfs() and main(). This function checks for the flags that were set in main and accordingly prints the information like GID, UID, size, permissions, etc.
+4.	void printingname(char *names,int root, int indent)
+This function is only used for printing the names of the files traversed in dfs(). The reason this is a separate file from printing() is because, printing() uses stat() function which needs absolute path (parent path/child path) format for getting information about files and folders. Since, we don’t need to print the entire path I’ve made this separate function. This also does some indentation for the files so it is easy to read which file falls under which directory.
+5.	int checklink(char *path)
+This function checks for symbolic links in a path. We follow symbolic links only for the option -L and when this option is not mentioned we only print the links. This function is called by dfs() where it checks if the flag for option -L is turned on and if it the path is a symbolic link and prints information accordingly.  
+6.	void dfs(char *basePath, const int root,int indent,bool t,bool p,bool i,bool u,bool g,bool s,bool d,bool l, bool L)
+This is the function that does most of the work in the program. It does the recursion traversal of the directory/file mentioned. It calls all other functions (except main ofcourse) throughout the code to do necessary printing and checking.
+
+Side notes and special mentions about functions /options
+
+1.	Indentation ‘-I’ option: we can do various different options for this function like:
+a.	-I : this case takes the default (4) value for indentation and takes the default folder (“..”) and does depth first traversal for this folder. (No other information will be printed unless mentioned in the command line)
+b.	-In: this is the case where n is an optional value, we can change the indentation for our printed values using n. Note that there should be NO SPACE between -I and the number or the number will be considered as another option. If a folder of a file is not mentioned after In then it will take “..” and do depth first traversal for it.
+c.	-I hello.c: In this case the indentation value will be default (4) and only the file name will be mentioned unless other options are also mentioned.
+d.	-I folder: Indentation value will be default (4) and depth first traversal will be done for the directory folder.
+e.	-In -s -l folder: Multiple options can be set along side -I. 
+2.	A few parts of code has been copied from stackoverflow and other websites. These are mentioned in the program as comments.
+3.	If the folder name / file name mentioned in the command line does not exist, the program will run depth first search on the default folder “..” 
+
+Problems faced during the project
+1.	The first problem that I had was that I was very unfamiliar with getopt and perror. Also since we had played around with linux nearly 7 years ago, I had forgotten a lot of it (I mean majority of it). It took me 3 days just to figure out what the project was about. I was unsure about the login and the server also but that became clearer after I was able to log in. 
+2.	The dfs algorithm was also giving me a lot of trouble initially. Because of stat() mainly. Initially I had tried d_type to check for directory or file and it gave unknown value. I had to change and use ISDIR and this required absolute path referencing. It was eventually solved thanks to professor mark.
+3.	If the program takes the default current directory for traversal the printing() will throw a "Failed to get information on the file" perror, this is because the entire path will be passed to this function, and stat() only needs the absolute path. I was unable to solve this problem unfortunately.
+4.	The Makefile for my program was giving me errors. It seems to be working for now. But I am still a little unsure. 
+5.	The only other problem that I had and still have in my program is that I was unable to indent the file information in a single line. Since the algorithm was printing as it was traversing through recursion there was no way to know before hand how many subfolders will be there, to start printing the file information. I tried to store the traversal information in an array but the pointers were giving me a lot of bugs and it was taking a lot more time (and I really needed to start on project 2). 
+
+
+
+
+
